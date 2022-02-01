@@ -41,6 +41,17 @@
             ("max-nfa-size", ["256"]),
         ],
 
+	    "infant2" : [
+            ("exec", 'infant2', 'nocombination'),
+            ("algorithm", ["infant2"]),
+            ("input-start-pos", ["0"]),
+            ("input-len", ["1000000"]),
+            ('split-entire-inputstream-to-chunk-size', ['1000']),
+            ("block-size", ["256"]),
+            ("max-nfa-size", ["256"]),
+        ],
+
+
         "nfacg" : [
             ("exec", 'ppopp12', 'nocombination'),
             ("algorithm", ["ppopp12"]),
