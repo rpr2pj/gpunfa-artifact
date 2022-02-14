@@ -42,7 +42,7 @@
         ],
 
 	    "infant2" : [
-            ("exec", 'infant2', 'nocombination'),
+            ("exec", 'infant2_wrapper.sh', 'nocombination'),
             ("algorithm", ["infant2"]),
             ("input-start-pos", ["0"]),
             ("input-len", ["1000000"]),

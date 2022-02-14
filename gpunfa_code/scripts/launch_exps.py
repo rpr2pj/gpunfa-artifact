@@ -191,7 +191,6 @@ class Config:
             for it in self.cfg['exp_parameters']:
                 res[app].extend(self.generate_command_for_app(it, app))  
 
-        #print(res)
 
         return res
 

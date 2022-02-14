@@ -43,6 +43,7 @@ using namespace std;
 size_t getFilesize(const char* filename);
 void Usage(void);
 bool ParseCommandLine(int argc, char *argv[]);
+static vector< char> file2SlicedCharVector(string fn);
 
 const char *pattern_name = NULL;
 
@@ -61,7 +62,7 @@ int main(int argc, char* argv[]){
 	int retval;
 	std::vector<TransitionGraph *> nfa_vec;
 
-	char char_temp;
+	// char char_temp;
     char filename[1500], bufftmp[10];
 
 	struct timeval c1, c2, c3, c4, c5, c6;
@@ -173,7 +174,8 @@ int main(int argc, char* argv[]){
 	printf("-----------------Starting nfa execution--------------------\n");
     	
 	// open input stream file    
-	ifstream fp(cfg.get_trace_file_name());
+	// ifstream fp(cfg.get_trace_file_name());
+
 #ifdef DEBUG
 	if (timing_filename != NULL)//and timing file
 		fp_timing.open(timing_filename,ios::binary | ios::out);
@@ -195,11 +197,50 @@ int main(int argc, char* argv[]){
 	// Read input stream file
 	unsigned int cnt2=0;
 	unsigned int cnt=0;
+
+	// opens the input file and load as unsigend vector of char
+	// slice the input stream
+	vector<char> input = file2SlicedCharVector(cfg.get_trace_file_name());
+
+	// TODO: handle file not opened case
+	for (char char_temp : input) {
+		cnt2++;	// total number of bytes	
+			payload.push_back(char_temp);
+			cnt++; // number of bytes in a packet				
+			if (cnt==packet_size){
+				//note: padding to each packet if packet_size is not evenly divided by fetch_bytes (e.g. 4, 8)
+				if ( (cnt%fetch_bytes) != 0 ) {
+					for (unsigned int i = 0; i < (fetch_bytes-(cnt%fetch_bytes)); i++)
+						payload.push_back(0);
+					burst.save_n_padded_bytes(fetch_bytes-(cnt%fetch_bytes));
+				}
+				burst.append_payload(payload);
+				payload_count.push_back(payload.size());//cout << payload.size() << endl;
+				processed_packets++;
+				payload.clear();
+				cnt=0;
+			}
+	}
+	if ((cnt>0)&&(cnt<packet_size)){
+		//-- note: padding to each packet if packet_size is not evenly divided by fetch_bytes (e.g. 4, 8)
+		if ( (cnt%fetch_bytes) != 0 ) {
+			for (unsigned int i = 0; i < (fetch_bytes-(cnt%fetch_bytes)); i++)
+				payload.push_back(0);
+			burst.save_n_padded_bytes(fetch_bytes-(cnt%fetch_bytes));
+		}
+		burst.append_payload(payload);
+		payload_count.push_back(payload.size());//cout << payload.size() << endl;
+		processed_packets++;
+		payload.clear();
+		cnt=0;
+	}
+
+/*
 	if (fp){								
 		while ( fp.get(char_temp) ){
-			cnt2++;	
+			cnt2++;	// total number of bytes	
 			payload.push_back(char_temp);
-			cnt++;					
+			cnt++; // number of bytes in a packet				
 			if (cnt==packet_size){
 				//note: padding to each packet if packet_size is not evenly divided by fetch_bytes (e.g. 4, 8)
 				if ( (cnt%fetch_bytes) != 0 ) {
@@ -231,6 +272,8 @@ int main(int argc, char* argv[]){
 	else{
 		cout<< "Cannot open input file" << endl;				
 	}
+*/
+	
 	cout << "Number of processed packets: "<< processed_packets << " and total number of bytes: "<< cnt2 << endl;
 	for (unsigned int i = 0; i < processed_packets; i++){
 		cout << "Packet "<< i+1 << ": " << payload_count[i] << endl;				
@@ -244,9 +287,9 @@ int main(int argc, char* argv[]){
 
 	accepted_rules = nfa_execute(nfa_vec, burst, n_subsets, 
 #ifdef DEBUG
-	                             rulestartvec,
+	rulestartvec,
 #endif	
-	                             &t_alloc, &t_kernel, &t_collect, &blockSize, trans_per_sym, blksiz_tuning);
+	&t_alloc, &t_kernel, &t_collect, &blockSize, trans_per_sym, blksiz_tuning);
 
 	gettimeofday(&c5, NULL);
 		
@@ -302,7 +345,9 @@ int main(int argc, char* argv[]){
 #endif
 	
 	// close the file
-	fp.close();
+	// fp.close();
+	
+	// TODO: close input file
 
 #ifdef DEBUG	
 	if (timing_filename != NULL)
@@ -416,27 +461,27 @@ bool ParseCommandLine(int argc, char *argv[])
 		}
 		
 		if (strcmp(argv[CurrentItem], "-N") == 0)
-			{
-				CurrentItem++;
-				retVal = sscanf(argv[CurrentItem],"%d", &total_rules);
-				if(retVal!=1 || total_rules < 1 ){
-					printf("Invalid TOTAL_RULES number: %s\n", argv[CurrentItem]);
-					return false;
-				}
-				CurrentItem++;
-				continue;
+		{
+			CurrentItem++;
+			retVal = sscanf(argv[CurrentItem],"%d", &total_rules);
+			if(retVal!=1 || total_rules < 1 ){
+				printf("Invalid TOTAL_RULES number: %s\n", argv[CurrentItem]);
+				return false;
+			}
+			CurrentItem++;
+			continue;
 		}
 
 		if (strcmp(argv[CurrentItem], "-O") == 0)
-			{
-				CurrentItem++;
-				retVal = sscanf(argv[CurrentItem],"%d", &blksiz_tuning);
-				if(retVal!=1 || blksiz_tuning > 1 ){
-					printf("Invalid blksiz_tuning param: %s\n", argv[CurrentItem]);
-					return false;
-				}
-				CurrentItem++;
-				continue;
+		{
+			CurrentItem++;
+			retVal = sscanf(argv[CurrentItem],"%d", &blksiz_tuning);
+			if(retVal!=1 || blksiz_tuning > 1 ){
+				printf("Invalid blksiz_tuning param: %s\n", argv[CurrentItem]);
+				return false;
+			}
+			CurrentItem++;
+			continue;
 		}
 
 		if (strcmp(argv[CurrentItem], "-h") == 0 || strcmp(argv[CurrentItem], "-?") == 0)
@@ -444,6 +489,38 @@ bool ParseCommandLine(int argc, char *argv[])
 			CurrentItem++;
 			Usage();
 			return false;
+		}
+
+		// added option: input_start_pos
+		if (strcmp(argv[CurrentItem], "-s") == 0)
+		{
+			CurrentItem++;
+			int input_start_pos;
+			retVal = sscanf(argv[CurrentItem],"%d", &input_start_pos);
+			cfg.set_input_start_pos(input_start_pos);
+			// TODO: check sanity condition
+			if(retVal!=1 || input_start_pos < 0){
+				printf("Invalid input_start_pos number: %s\n", argv[CurrentItem]);
+				return false;
+			}
+			CurrentItem++;
+			continue;
+		}
+
+		// added option: input_len
+		if (strcmp(argv[CurrentItem], "-l") == 0)
+		{
+			CurrentItem++;
+			int input_len;
+			retVal = sscanf(argv[CurrentItem],"%d", &input_len);
+			cfg.set_input_len(input_len);
+			// TODO: check sanity condition
+			if(retVal!=1 || input_len < 1){
+				printf("Invalid input_len number: %s\n", argv[CurrentItem]);
+				return false;
+			}
+			CurrentItem++;
+			continue;
 		}
 	}
 
@@ -460,6 +537,8 @@ void Usage(void) {
 					 "\t-g <n>    :   number of graphs (or NFAs)(number of thread blocks in grid.y) to be executed (default: 1)\n" \
 					 "\t-p <n>    :   number of parallel packets to be examined (number of thread blocks in grid.x)(defaul: 1)\n"\
 					 "\t-N <n>    :   total number of rules (subgraphs)\n" \
+					 "\t-s <n>	  :	  input start position\n"\
+					 "\t-l <n> 	  :   input length\n"\
 					 "\t-O <n>    :   0 - block size tuning not enabled; 1 - block size tuned (optional, default: 0 - not tuning)\n" \
 #ifdef DEBUG
 					 "\t-f <name> :   timing result filename (optional, default: empty)\n" \
@@ -480,4 +559,70 @@ void Usage(void) {
         return 0;
     }
     return st.st_size;   
+}
+
+/**
+ * From gpu-artifact (From VASim)
+ */
+ static vector<char> file2SlicedCharVector(string fn) {
+
+    // open the file:
+    std::ifstream file(fn, std::ios::binary);
+    if(file.fail()){
+        if(errno == ENOENT) {
+            cout<< " Error: no such input file." << endl;
+            exit(-1);
+        }
+    }
+
+    // get its size:
+    std::streampos fileSize;
+	// cout << "fileSize from streampos: " << fileSize << endl;		// DEBUG
+
+    file.seekg(0, std::ios::end);
+    fileSize = file.tellg();
+    file.seekg(0, ios::beg);
+
+    // Stop eating new lines in binary mode!!!
+    file.unsetf(std::ios::skipws);
+
+    // reserve capacity
+    std::vector<unsigned char> vec;
+    vec.reserve(fileSize);
+
+    // read the data:
+    vec.insert(vec.begin(),
+		std::istream_iterator<unsigned char>(file),
+		std::istream_iterator<unsigned char>());
+
+	cout << "vec size: " << vec.size() << endl;		// DEBUG
+
+	// slice the data stream
+	 int start = cfg.get_input_start_pos();
+	 int len = cfg.get_input_len();
+	cout << "start_pos = "<< start <<endl;		// DEBUG
+	cout << "len = " << len << endl;		// DEBUG
+	// assert(start >= 0);
+	// assert(len >= 0);
+	assert(start < fileSize);
+
+	std::vector<char> input;
+
+	if(start + len > vec.size()) {
+		len = vec.size() - start;
+		input.reserve(vec.size());
+		cout << "the input is shorter than the length specified, just slice to end" << endl;
+	} else {
+		input.reserve(len);
+	}
+
+	assert(start + len <= vec.size());
+    
+    for (int i = start; i < start + len; i++) {
+        input.push_back(vec[i]);
+    }	
+
+	cout << "input.size() = " << input.size() << endl;		// DEBUG
+
+    return input;
 }

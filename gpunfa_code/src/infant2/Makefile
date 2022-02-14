@@ -12,10 +12,10 @@ CXX=g++
 CC=gcc
 
 ######CUDA_INCLUDE=-I/usr/local/cuda/include
-CUDA_INCLUDE=-I/usr/local/cuda-8.0/include
+CUDA_INCLUDE=-I/usr/local/cuda-11.0/include
 
-CXXFLAGS+=$(CUDA_INCLUDE) -Wno-deprecated
-NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo -DTEXTURE_MEM_USE
+CXXFLAGS+=$(CUDA_INCLUDE) -Wno-deprecated -g
+NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo -DTEXTURE_MEM_USE -g
 
 export DYN_LIB=-lpcap -lboost_regex -lpcre
 

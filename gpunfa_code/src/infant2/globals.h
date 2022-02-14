@@ -21,6 +21,7 @@
 
 #ifndef GLOBALS_H_
 #define GLOBALS_H_
+// #define DEBUG True
 
 #include "config_options.h"
 #include "host_functions.h"

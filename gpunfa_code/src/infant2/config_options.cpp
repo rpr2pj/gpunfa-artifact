@@ -39,6 +39,9 @@ ConfigOptions::ConfigOptions() {
 	blocks_y_ = 1;
 	trace_file_name_ = NULL;
 	burst_size_ = parallel_packets_ * 2048;
+	input_start_pos_ = 0;
+	input_len_ = -1;
+	max_nfa_size_ = -1;
 #ifdef VALIDATE
 	validate_filename_ = NULL;
 #endif
@@ -96,6 +99,18 @@ unsigned int ConfigOptions::get_total_packets() const {
 	return total_packets_;
 }
 
+int ConfigOptions::get_input_start_pos() const {
+	return input_start_pos_;
+}
+
+int ConfigOptions::get_input_len() const {
+	return input_len_;
+}
+
+unsigned int ConfigOptions::get_max_nfa_size() const {
+	return max_nfa_size_;
+}
+
 vector<HalfTrie<symbol_t, out_symbol_t> *> &ConfigOptions::get_mutable_trns() {
 	return trns_;
 }
@@ -147,6 +162,18 @@ void ConfigOptions::set_trace_file_name(char *trace_file_name) {
 
 void ConfigOptions::add_trns(HalfTrie<symbol_t, out_symbol_t> *trns) {
 	trns_.push_back(trns);
+}
+
+void ConfigOptions::set_input_start_pos(int input_start_pos) {
+	input_start_pos_ = input_start_pos;
+}
+
+void ConfigOptions::set_input_len(int input_len) {
+	input_len_ = input_len;
+}
+
+void ConfigOptions::set_max_nfa_size(unsigned int max_nfa_size) {
+	max_nfa_size_ = max_nfa_size;
 }
 
 CudaAllocator &ConfigOptions::get_allocator() {
