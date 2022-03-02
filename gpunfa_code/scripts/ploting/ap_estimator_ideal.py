@@ -7,7 +7,7 @@ def get_app_and_num_of_state():
     script_path = os.path.dirname(os.path.realpath(__file__))
     #print(script_path)
 
-    df = pd.read_excel(script_path + '/applications.xlsx', sheet_name=0)
+    df = pd.read_excel(script_path + '/applications.xlsx', sheet_name=0, engine='openpyxl')
     num_of_states = df.loc[0]
 
     app_and_state = []

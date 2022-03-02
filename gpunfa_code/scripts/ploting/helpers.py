@@ -12,7 +12,7 @@ geomean = lambda n: reduce(lambda x, y: x*y, n) ** (1.0 / len(n))
 
 def get_app_order():
     script_path = os.path.dirname(os.path.realpath(__file__))
-    df = pd.read_excel(script_path + '/applications.xlsx', sheet_name=0)
+    df = pd.read_excel(script_path + '/applications.xlsx', sheet_name=0, engine='openpyxl')
     num_of_states = df.loc[0]
 
     app_and_state = []
