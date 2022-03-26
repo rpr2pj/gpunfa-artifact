@@ -22,6 +22,7 @@ fi
 echo "Build from the source code. "
 cd gpunfa_code && rm -rf build && mkdir build
 cd build && cmake --quiet -DCMAKE_BUILD_TYPE=Release ..
+cp /gpunfa_code/scripts/infant2_wrapper.sh /gpunfa_code/build/bin
 
 
 if [ $? -eq 0 ]; then
