@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # in gpunfa-artifact/gpunfa_code/build/bin/infant2/
-SRC="../../../src"
+SRC="${GPUNFA_ROOT}/gpunfa_code/src"
 cd $SRC/infant2/
 make
 cd -
@@ -95,19 +95,24 @@ done
 cd ../
 
 BASE="$(basename ${NFA_FILENAME} .anml)" 
-mkdir ${BASE}_$NUMBER_OF_SUBGRAPHS
-mv a ${BASE}_$NUMBER_OF_SUBGRAPHS/split_nfa_$NUMBER_OF_SUBGRAPHS
-mv b ${BASE}_$NUMBER_OF_SUBGRAPHS/split_anml_$NUMBER_OF_SUBGRAPHS
+
+n=0
+while ! mkdir ${BASE}_${NUMBER_OF_SUBGRAPHS}_$n
+do  
+    n=$((n+1))
+done
+
+mv a ${BASE}_${NUMBER_OF_SUBGRAPHS}_$n/split_nfa_${NUMBER_OF_SUBGRAPHS}
+mv b ${BASE}_${NUMBER_OF_SUBGRAPHS}_$n/split_anml_${NUMBER_OF_SUBGRAPHS}
 
 TRANSITION_GRAPH_FILENAME="../split_nfa"
 
-cd ${BASE}_$NUMBER_OF_SUBGRAPHS
-mkdir infant2_out_$NUMBER_OF_SUBGRAPHS
-cd infant2_out_$NUMBER_OF_SUBGRAPHS
+cd ${BASE}_${NUMBER_OF_SUBGRAPHS}_$n
+mkdir infant2_out_${NUMBER_OF_SUBGRAPHS}_$n
+cd infant2_out_${NUMBER_OF_SUBGRAPHS}_$n
 
 # TODO: max-nfa-size arg for infant2 unimplementated 
 # run infant2 with the generated transition graph
-echo "../../../../../src/infant2/nfa_engine -a $TRANSITION_GRAPH_FILENAME -i $INPUT_FILENAME -s $INPUT_START_POS -l $INPUT_LEN -p $NUM_PACKETS -T $BLOCK_SIZE -g $NUMBER_OF_SUBGRAPHS"
-../../$SRC/infant2/nfa_engine -a $TRANSITION_GRAPH_FILENAME -i $INPUT_FILENAME -s $INPUT_START_POS -l $INPUT_LEN -p $NUM_PACKETS -T $BLOCK_SIZE -g $NUMBER_OF_SUBGRAPHS
-
+echo "$SRC/infant2/nfa_engine -a $TRANSITION_GRAPH_FILENAME -i $INPUT_FILENAME -s $INPUT_START_POS -l $INPUT_LEN -p $NUM_PACKETS -T $BLOCK_SIZE -g $NUMBER_OF_SUBGRAPHS"
+$SRC/infant2/nfa_engine -a $TRANSITION_GRAPH_FILENAME -i $INPUT_FILENAME -s $INPUT_START_POS -l $INPUT_LEN -p $NUM_PACKETS -T $BLOCK_SIZE -g $NUMBER_OF_SUBGRAPHS
 

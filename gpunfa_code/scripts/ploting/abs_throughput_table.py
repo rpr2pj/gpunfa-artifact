@@ -6,6 +6,7 @@ from ap_estimator_ideal import *
 
 cfg_name_map = {
     'output_infant_infant_0_1000000_1000_256_256' : 'iNFAnt',
+    'output_infant2_infant2_0_1000000_1000_256_256' : 'iNFAnt2',
     'output_newtran_obat2_0_1000000_1000_256_256' : 'NT',
     'output_newtran_obat_MC_0_1000000_1000_256_256' : 'NT-Mac',
     'output_hotstarttt_hotstart_aa_0_1000000_1000_256_256_1280' : 'HotStartTT',
@@ -22,6 +23,7 @@ cfg_order = [
 'AP',
 'AP_ideal',
 'iNFAnt',
+'iNFAnt2',
 'NT',
 'NT-Mac',
 'NFA-CG',
@@ -98,7 +100,7 @@ if __name__ == '__main__':
         cfg_rmap[cfg_name_map[k]] = k
 
     data1 = readFromFile('avgres_throughput.txt', 'throughput')
-
+    print(data1)
     data1['AP_ideal'] = get_throughput(49152, 1000, 1000)
     data1['AP'] = get_throughput(49152, 1000, 1000, False)
 

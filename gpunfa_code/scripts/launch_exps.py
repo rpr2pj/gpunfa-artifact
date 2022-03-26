@@ -191,6 +191,7 @@ class Config:
             for it in self.cfg['exp_parameters']:
                 res[app].extend(self.generate_command_for_app(it, app))  
 
+        # print(res)
 
         return res
 
@@ -221,6 +222,7 @@ class Config:
                 pbsT = llcommons.read_file_to_string(self.pbs_template)
             
             os.chdir(app)
+            print("current dir:" + os.getcwd())
             for cmd, outfile in commands[app]:
                 if self.do_exec:
                     prog_output = outfile + ".txt"
