@@ -42,6 +42,7 @@ ConfigOptions::ConfigOptions() {
 	input_start_pos_ = 0;
 	input_len_ = -1;
 	max_nfa_size_ = -1;
+	packet_size_ = -1;
 #ifdef VALIDATE
 	validate_filename_ = NULL;
 #endif
@@ -107,8 +108,12 @@ int ConfigOptions::get_input_len() const {
 	return input_len_;
 }
 
-unsigned int ConfigOptions::get_max_nfa_size() const {
+int ConfigOptions::get_max_nfa_size() const {
 	return max_nfa_size_;
+}
+
+int ConfigOptions::get_packet_size() const {
+	return packet_size_;
 }
 
 vector<HalfTrie<symbol_t, out_symbol_t> *> &ConfigOptions::get_mutable_trns() {
@@ -172,8 +177,12 @@ void ConfigOptions::set_input_len(int input_len) {
 	input_len_ = input_len;
 }
 
-void ConfigOptions::set_max_nfa_size(unsigned int max_nfa_size) {
+void ConfigOptions::set_max_nfa_size(int max_nfa_size) {
 	max_nfa_size_ = max_nfa_size;
+}
+
+void ConfigOptions::set_packet_size(int packet_size) {
+	packet_size_ = packet_size;
 }
 
 CudaAllocator &ConfigOptions::get_allocator() {

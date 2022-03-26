@@ -59,6 +59,7 @@ class ConfigOptions {
 		char *trace_file_name_;
 		int input_start_pos_;
 		int input_len_;
+		int packet_size_;
 		unsigned int max_nfa_size_;
 
 		symbol_t max_out_;
@@ -90,7 +91,8 @@ class ConfigOptions {
 		unsigned int get_total_packets() const;
 		int get_input_start_pos() const;
 		int get_input_len() const;
-		unsigned int get_max_nfa_size() const;
+		int get_max_nfa_size() const;
+		int get_packet_size() const;
 		CudaAllocator &get_allocator();
 
 		void set_burst_size(unsigned int burst_size);
@@ -106,7 +108,8 @@ class ConfigOptions {
 		void set_trace_file_name(char * trace_filename);
 		void set_input_start_pos(int input_start_pos);
 		void set_input_len(int input_len);
-		void set_max_nfa_size(unsigned int max_nfa_size);
+		void set_max_nfa_size(int max_nfa_size);
+		void set_packet_size(int packet_size);
 
 
 		void add_trns(half_trie::HalfTrie<symbol_t, out_symbol_t> *trns);

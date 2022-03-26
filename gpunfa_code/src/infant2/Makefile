@@ -15,7 +15,8 @@ CC=gcc
 CUDA_INCLUDE=-I/usr/local/cuda-11.0/include
 
 CXXFLAGS+=$(CUDA_INCLUDE) -Wno-deprecated -g
-NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo -DTEXTURE_MEM_USE -g
+# NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo -DTEXTURE_MEM_USE -g
+NVCCFLAGS+=$(CUDA_INCLUDE) -Xptxas -v -arch ${SM} --compiler-options -Wno-deprecated -lineinfo -g
 
 export DYN_LIB=-lpcap -lboost_regex -lpcre
 

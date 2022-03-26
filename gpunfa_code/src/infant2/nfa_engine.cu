@@ -102,7 +102,14 @@ int main(int argc, char* argv[]){
 	cout<< "Total input bytes: "   << total_bytes << endl;
 	unsigned int n_subsets   = cfg.get_blocks_y();         
 	unsigned int n_packets   = cfg.get_parallel_packets();
-	unsigned int packet_size = ((total_bytes%n_packets)==0)?(total_bytes/n_packets):(total_bytes/n_packets+1);
+	unsigned int packet_size;
+	if(n_packets == -1){
+		packet_size = cfg.get_packet_size();
+		cout << "packet_size from arg: " << packet_size << endl;
+		n_packets = total_bytes / packet_size;
+	} else {
+		packet_size = ((total_bytes%n_packets)==0)?(total_bytes/n_packets):(total_bytes/n_packets+1);
+	}
 	cout<< "Graph(s) (NFA(s)) combined: "   << n_subsets << endl;
 	cout<< "Packet(s): "   << n_packets << endl;
 	cout<< "Packet size (bytes): " << packet_size << endl;
@@ -182,7 +189,7 @@ int main(int argc, char* argv[]){
 	if (blksiz_filename != NULL)//and timing file
 		fp_blksiz.open(blksiz_filename,ios::binary | ios::out);
 #endif
-	
+	unsigned int total_input_bytes = 0;
 	unsigned int processed_packets = 0;
 {	   
     gettimeofday(&c3, NULL);
@@ -273,11 +280,11 @@ int main(int argc, char* argv[]){
 		cout<< "Cannot open input file" << endl;				
 	}
 */
-	
+	total_input_bytes = cnt2;	
 	cout << "Number of processed packets: "<< processed_packets << " and total number of bytes: "<< cnt2 << endl;
-	for (unsigned int i = 0; i < processed_packets; i++){
-		cout << "Packet "<< i+1 << ": " << payload_count[i] << endl;				
-	}
+	// for (unsigned int i = 0; i < processed_packets; i++){
+	// 	cout << "Packet "<< i+1 << ": " << payload_count[i] << endl;				
+	// }
 	
 	for (unsigned int i = 0; i < n_subsets; i++) {//Changed
 		burst.init_state_vector(cfg.get_state_vector(i), i);
@@ -326,7 +333,8 @@ int main(int argc, char* argv[]){
     t_out   = ((double)seconds * 1000 + (double)useconds/1000.0);
 #endif	
     printf("Execution times: NFA loading (from text): %lf(ms), Input stream loading: %lf(ms), GPU mem alloc: %lf(ms), GPU kernel execution: %lf(ms), Result collecting: %lf(ms)\n", t_NFAload, t_in, t_alloc, t_kernel, t_collect);
-	
+	cout << "throughput = " << std::fixed << 1000 * total_input_bytes / t_kernel << endl; // in sec
+
 #ifdef DEBUG
 	//Write timing result and blocksize to file
 	double t_NFAs[7];
@@ -408,6 +416,10 @@ bool ParseCommandLine(int argc, char *argv[])
 			unsigned int parallel_packets;
 			retVal = sscanf(argv[CurrentItem],"%d", &parallel_packets);
 			cfg.set_parallel_packets(parallel_packets);
+			// if(parallel_packets == -1){
+			// 	printf("expecting arg num_packet");
+			// 	continue;
+			// }
 			if(retVal!=1 || parallel_packets < 1 ){
 				printf("Invalid parallel_packets number: %s\n", argv[CurrentItem]);
 				return false;
@@ -515,9 +527,12 @@ bool ParseCommandLine(int argc, char *argv[])
 			retVal = sscanf(argv[CurrentItem],"%d", &input_len);
 			cfg.set_input_len(input_len);
 			// TODO: check sanity condition
-			if(retVal!=1 || input_len < 1){
-				printf("Invalid input_len number: %s\n", argv[CurrentItem]);
+			// allow negative input length, gives warning for slicing to the end
+			if(retVal!=1){
 				return false;
+			} 
+			if (input_len < 0){
+				printf("Invalid negative input_len number: %s, taking the entire input stream\n", argv[CurrentItem]);
 			}
 			CurrentItem++;
 			continue;
@@ -602,25 +617,41 @@ void Usage(void) {
 	 int len = cfg.get_input_len();
 	cout << "start_pos = "<< start <<endl;		// DEBUG
 	cout << "len = " << len << endl;		// DEBUG
-	// assert(start >= 0);
+	assert(start >= 0);
 	// assert(len >= 0);
 	assert(start < fileSize);
 
-	std::vector<char> input;
+	// cout << "start+len=" << start+len << endl;	// DEBUG
 
-	if(start + len > vec.size()) {
-		len = vec.size() - start;
-		input.reserve(vec.size());
-		cout << "the input is shorter than the length specified, just slice to end" << endl;
+	int size = (int)vec.size();
+	std::vector<char> input;
+	int end;
+
+	if(len == -1) {
+		cout << "taking input from start position: " << start << " to the end" << endl;
+		input.reserve(size-start);
+		end = size-1;
 	} else {
-		input.reserve(len);
+		if( (start+len) > size){
+			cout << "the input is shorter than the length specified, just slice to the end" << endl;
+			input.reserve(size-start);
+			end = size-1;
+		} else {
+			assert(start + len <= size);
+			end = start+len;
+			input.reserve(len);
+		}
 	}
 
-	assert(start + len <= vec.size());
-    
-    for (int i = start; i < start + len; i++) {
+	for (int i = start; i < end; i++) {
         input.push_back(vec[i]);
-    }	
+    }
+
+	// vec.erase(vec.begin(), vec.begin()+start);
+	// if(end != size){
+	// 	vec.erase(vec.begin()+end+1,vec.begin()+size+1);
+	// }
+	cout << "vec.size()=" << vec.size() << endl;	// DEBUG
 
 	cout << "input.size() = " << input.size() << endl;		// DEBUG
 
