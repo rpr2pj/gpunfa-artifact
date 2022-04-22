@@ -1,12 +1,12 @@
 #!/bin/bash
 
-# in gpunfa-artifact/gpunfa_code/build/bin/infant2/
+# working dir: gpunfa-artifact/gpunfa_code/build/bin/
 SRC="${GPUNFA_ROOT}/gpunfa_code/src"
 cd $SRC/infant2/
 make
 cd -
 
-ALGORITHM=""    # used in gpu-artifactz
+ALGORITHM=""    # used in gpu-artifact
 BLOCK_SIZE=256
 MAX_NFA_SIZE=-1
 INPUT_START_POS=0
@@ -113,6 +113,6 @@ cd infant2_out_${NUMBER_OF_SUBGRAPHS}_$n
 
 # TODO: max-nfa-size arg for infant2 unimplementated 
 # run infant2 with the generated transition graph
-echo "$SRC/infant2/nfa_engine -a $TRANSITION_GRAPH_FILENAME -i $INPUT_FILENAME -s $INPUT_START_POS -l $INPUT_LEN -p $NUM_PACKETS -T $BLOCK_SIZE -g $NUMBER_OF_SUBGRAPHS"
-$SRC/infant2/nfa_engine -a $TRANSITION_GRAPH_FILENAME -i $INPUT_FILENAME -s $INPUT_START_POS -l $INPUT_LEN -p $NUM_PACKETS -T $BLOCK_SIZE -g $NUMBER_OF_SUBGRAPHS
+echo "$SRC/infant2/nfa_engine -a $TRANSITION_GRAPH_FILENAME -i $INPUT_FILENAME -s $INPUT_START_POS -l $INPUT_LEN -p $NUM_PACKETS -T $BLOCK_SIZE -g $NUMBER_OF_SUBGRAPHS -O 1"
+$SRC/infant2/nfa_engine -a $TRANSITION_GRAPH_FILENAME -i $INPUT_FILENAME -s $INPUT_START_POS -l $INPUT_LEN -p $NUM_PACKETS -T $BLOCK_SIZE -g $NUMBER_OF_SUBGRAPHS -O 1
 

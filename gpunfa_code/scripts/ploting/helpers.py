@@ -144,7 +144,18 @@ def autolabel(rects):
 
 
 def plot(data1, app_order, app_rmap, cfg_order, cfg_rmap, error_data=None, second_data_y=None, storebar1name='bars.csv', geo_mean=True):
-    color=iter(cm.rainbow(np.linspace(0,1,10)))
+    print("----------------printing data1----------------")
+    print(data1)
+    print("----------------printing app_order----------------")
+    print(app_order)
+    print("----------------printing app_rmap----------------")
+    print(app_rmap)
+    print("----------------printing cfg_order----------------")
+    print(cfg_order)
+    print("----------------printing cfg_rmap----------------")
+    print(cfg_rmap)
+    
+    color=iter(cm.rainbow(np.linspace(0,1,11)))
     next(color)
 
     plt.rcParams["font.weight"] = "bold"
@@ -169,7 +180,7 @@ def plot(data1, app_order, app_rmap, cfg_order, cfg_rmap, error_data=None, secon
     for cfg in cfg_order:
         original_cfg_name = cfg_rmap[cfg]
         tmp = select_bar(data1, original_cfg_name, [app_rmap[app] for app in app_order], geo_mean)
-        #print(cfg, np.asarray(tmp))
+        print(cfg, np.asarray(tmp))
         bars.append(tmp)
 
     f = open(storebar1name, 'w')
@@ -211,7 +222,7 @@ def plot(data1, app_order, app_rmap, cfg_order, cfg_rmap, error_data=None, secon
     
     #ax.set_ylim([0, 15])
     for i, (bar, cfg) in enumerate(zip(bars, cfg_order)):
-        ax.bar(y_pos + i * barwidth, bar, align='center', alpha=1, label = cfg, width=barwidth, hatch=hatches[i], edgecolor='black', color=next(color))
+        ax.bar(y_pos + i * barwidth, bar, align='center', alpha=1, label=cfg, width=barwidth, hatch=hatches[i], edgecolor='black', color=next(color))
         #print(bar)
 
     if error_data != None:

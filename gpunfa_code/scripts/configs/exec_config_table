@@ -1,0 +1,35 @@
+{
+    "exp_parameters" : {
+
+        "infant2" : [
+            ("exec", 'infant2_wrapper.sh', 'nocombination'),
+            ("algorithm", ["infant2"]),
+            ("input-start-pos", ["0"]),
+            ("input-len", ["1000000"]),
+            ('split-entire-inputstream-to-chunk-size', ['1500']),
+            ("block-size", ["256"]),
+            ("max-nfa-size", ["256"]),
+        ],
+
+        "infant" : [
+            ("exec", 'infant', 'nocombination'),
+            ("algorithm", ["infant"]),
+            ("input-start-pos", ["0"]),
+            ("input-len", ["1000000"]),
+            ('split-entire-inputstream-to-chunk-size', ['1500']),
+            ("block-size", ["256"]),
+            ("max-nfa-size", ["256"]),
+        ],
+
+
+    },
+
+    'exp_times'    : 3,
+    'out_prefix'   : 'output',
+    'input_suffix' : '1MB'
+ 
+}
+
+
+
+
