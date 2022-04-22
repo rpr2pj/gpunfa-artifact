@@ -22,7 +22,6 @@ fi
 echo "Build from the source code. "
 cd gpunfa_code && rm -rf build && mkdir build
 cd build && cmake --quiet -DCMAKE_BUILD_TYPE=Release ..
-cp /gpunfa_code/scripts/infant2_wrapper.sh /gpunfa_code/build/bin
 
 
 if [ $? -eq 0 ]; then
@@ -32,6 +31,9 @@ else
         exit 1
 fi
 
+cd ${GPUNFA_ROOT}/gpunfa_code/src/infant2
+make clean && make
+cp ${GPUNFA_ROOT}/gpunfa_code/scripts/infant2_wrapper.sh ${GPUNFA_ROOT}/gpunfa_code/build/bin
 cd ${GPUNFA_ROOT}
 
 echo "finished build the executables. Set them to PATH. "
