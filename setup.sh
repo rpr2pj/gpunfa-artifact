@@ -31,7 +31,7 @@ else
         exit 1
 fi
 
-cd ${GPUNFA_ROOT}/gpunfa_code/src/infant2
+cd ${GPUNFA_ROOT}/gpunfa_code/src/infant2 
 make clean && make
 cp ${GPUNFA_ROOT}/gpunfa_code/scripts/infant2_wrapper.sh ${GPUNFA_ROOT}/gpunfa_code/build/bin
 cd ${GPUNFA_ROOT}
