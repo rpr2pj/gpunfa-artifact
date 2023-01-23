@@ -81,7 +81,8 @@ class TransitionGraph {
 		//Added for matching operation		
 		//void mapping_states2rules(unsigned int *match_count, unsigned int *match_offset, unsigned int *match_states, 
 		//                          unsigned int match_vec_size, std::vector<unsigned long> cur_size_vec, std::ofstream &fp, int *rulestartvec, unsigned int gid) const;
-		void mapping_states2rules(unsigned int *match_count, match_type *match_array, unsigned int match_vec_size, std::vector<unsigned long> cur_size_vec, std::vector<unsigned long> pad_size_vec, std::ofstream &fp
+		void mapping_states2rules(unsigned int *match_count, match_type *match_array, unsigned int match_vec_size, std::vector<unsigned long> cur_size_vec, std::vector<unsigned long> pad_size_vec
+		, std::ofstream &fp
 #ifdef DEBUG
 		                                                           , int *rulestartvec, unsigned int gid
 #endif
@@ -91,18 +92,19 @@ class TransitionGraph {
 		ST_BLOCK *get_d_src_table() const;
 		unsigned int *get_d_offset_table() const;
 
-		st_t *get_nfa_table();
-		st_t *get_src_table();
-		unsigned int *get_offset_table();
+		st_t *get_nfa_table();						//new
+		st_t *get_src_table();						//new
+		unsigned int *get_offset_table();			//new
 				
 		StateVector &get_mutable_persistent_states();
 		StateVector &get_mutable_initial_states();
-		StateVector &get_accept_states();
+		StateVector &get_accept_states();			//new
 		
-		std::map<unsigned, std::set<unsigned> > &get_accepting_states_();
+		std::map<unsigned, std::set<unsigned> > &get_accepting_states_();	//modified
 		//Returning a reference means that the calling code can modify the value of your member variable after you return. 
 
 		size_t get_nfa_table_size() const;
+		// new from here
 		size_t get_offset_table_size() const;
 		
 		void free_devmem();
@@ -115,6 +117,7 @@ class TransitionGraph {
 		st_t *get_nfa_table_optim();
 		st_t *get_src_table_optim();
 		void free_hostmem();
+		// new ends
 };
 
 TransitionGraph *load_nfa_file(const char *pattern_name, unsigned int gid, unsigned int *trans_per_sym);

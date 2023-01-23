@@ -69,6 +69,15 @@ __global__ void nfa_kernel(	st_t *nfa_tables,
 	unsigned int accum_state_vector_length = accum_state_vector_lengths[blockIdx.y]; 
 	unsigned int accum_nfa_table_length    = accum_nfa_table_lengths   [blockIdx.y];
 	unsigned int accum_offset_table_length = accum_offset_table_lengths[blockIdx.y];
+	// if(myId==0 && blockIdx.x==0){
+	// 	printf("-----------------grid dim x = %d--------------\n", nstreams);
+	// 	printf("st_vec_length = %d \n", st_vec_length);
+	// 	printf("accum_state_vector_length = %d \n ", accum_state_vector_length);
+	// 	printf("accum_nfa_table_length = %d \n ", accum_nfa_table_length);
+	// 	printf("accum_offset_table_length = %d. \n", accum_offset_table_length);
+	// }
+
+
 	
 	ST_BLOCK *final_vector = _svs + st_vec_length*blockIdx.x + accum_state_vector_length*nstreams;
 
@@ -107,7 +116,25 @@ __global__ void nfa_kernel(	st_t *nfa_tables,
 				// Each thread reads 1 transition at each step.
 				st_t dst_state = nfa_tables[i + tr_base + accum_nfa_table_length];
 				st_t src_state = src_tables[i + tr_base + accum_nfa_table_length];  
-		
+
+				// printf("dst_state: %d, ", dst_state);
+				// printf("nfa_table[i]=%d\n", nfa_tables[i + tr_base + accum_nfa_table_length]);
+				// printf("src_state: %d\n", src_state);
+				// printf("nfa_tables: %d",nfa_tables[i]);
+			// if(myId==0 && blockIdx.x==0 ){
+			// 	printf("---nfa_tables---\n");
+			// 	for(int j=0; j<sizeof(nfa_tables); j++){
+			// 		printf("%d, ", nfa_tables[j]);
+			// 	}
+			// 	printf("\n");
+			// }
+
+				// printf("---src_tables---");
+				// for(int i=0; i<sizeof(src_tables);i++){
+				// 	printf("%d, ", src_tables[i]);
+				// }
+				// printf("\n");
+			// }
 // These macros are there to extract the relevant fields.
 // Bits and chunks are there to select the right bit in the state vectors.
 #define src_bit  (1 << (src_state % bit_sizeof(ST_BLOCK)))
@@ -115,8 +142,18 @@ __global__ void nfa_kernel(	st_t *nfa_tables,
 #define src_chunk (src_state / bit_sizeof(ST_BLOCK))
 #define dst_chunk (dst_state / bit_sizeof(ST_BLOCK))
 
-				ST_BLOCK lo_block = src_bit & status_vector[src_chunk];
-				if(lo_block) {
+// if(myId==0 && threadIdx.y==0 && blockIdx.x==0 && blockIdx.y==81){
+// if(myId==0 && threadIdx.y==0 &&  blockIdx.y==81){
+// 	printf("-----threadIdx.x=%d, threadIdx.y=%d, blockIdx.x=%d, blockIdx.y=%d-----\n", threadIdx.x,threadIdx.y,blockIdx.x,blockIdx.y);
+// 	printf("bit_sizeof(ST_BLOCK): %d\n", bit_sizeof(ST_BLOCK));
+// 	printf("src_state: %d\n", src_state);
+// 	printf("src_state % bit_sizeof(ST_BLOCK): %d\n", src_state % bit_sizeof(ST_BLOCK));
+// 	printf("src_bit: %d\n", src_bit);
+// 	printf("src_chunk: %d\n", src_chunk);
+// }
+
+				ST_BLOCK lo_block = src_bit & status_vector[src_chunk]; //check for match
+				if(lo_block) {	//match
 					if (dst_state < 0) {//Added for matching operation: check if the dst state is an accepting state
 						dst_state = -dst_state;
 						tmp_match_count = atomicAdd(&shr_match_count, 1);//printf("Inside kernel-low, offset: %d, state: %d, count %d\n",p, dst_state, shr_match_count);

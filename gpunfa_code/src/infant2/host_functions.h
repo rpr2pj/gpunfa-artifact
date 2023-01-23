@@ -27,6 +27,7 @@
 
 #ifndef HOST_FUNCTIONS_H_
 #define HOST_FUNCTIONS_H_
+#define gpuErrchk(ans) {gpuAssert((ans), __FILE__, __LINE__);}
 
 #include <fstream>
 #include <set>
@@ -40,6 +41,15 @@
 #include "transition_graph.h"
 
 class Burst;
+
+inline void gpuAssert(cudaError_t code, const char *file, int line, bool abort=true)
+{
+   if (code != cudaSuccess) 
+   {
+      fprintf(stderr,"GPUassert: %s %s %d\n", cudaGetErrorString(code), file, line);
+      if (abort) exit(code);
+   }
+}
 
 std::vector<std::set<unsigned> > nfa_execute(std::vector<TransitionGraph *> tg, Burst &burst, unsigned int n_subsets, 
 #ifdef DEBUG

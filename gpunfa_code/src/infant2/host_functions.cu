@@ -133,7 +133,7 @@ vector<set<unsigned> > nfa_execute(std::vector<TransitionGraph *> tg, Burst &bur
          << ", n_subsets: "     << n_subsets
          << ", Maximum matches allowed: " << (tmp_avg_count*burst.get_sizes().size()*n_subsets) << endl;
 	
-	h_match_array         = (match_type*)malloc ((tmp_avg_count*burst.get_sizes().size()) * n_subsets * sizeof(match_type));//just for now
+	h_match_array         = (match_type*)malloc ((burst.get_sizes().size()) * n_subsets * sizeof(match_type));//just for now
 	h_match_count         = (unsigned int*)malloc ((              burst.get_sizes().size()) * n_subsets * sizeof(unsigned int));//just for now 
 	
     accum_nfa_table_lengths    = (unsigned int*)malloc (n_subsets * sizeof(unsigned int));
@@ -141,8 +141,10 @@ vector<set<unsigned> > nfa_execute(std::vector<TransitionGraph *> tg, Burst &bur
 	accum_state_vector_lengths = (unsigned int*)malloc (n_subsets * sizeof(unsigned int));
 	st_vec_lengths             = (unsigned int*)malloc (n_subsets * sizeof(unsigned int));
 	
-	cudaMalloc( (void **) &d_match_array,  (tmp_avg_count*burst.get_sizes().size()) * n_subsets * sizeof(match_type));//just for now
-    cudaMalloc( (void **) &d_match_count,  (              burst.get_sizes().size()) * n_subsets * sizeof(unsigned int));//just for now
+	//cudaMalloc( (void **) &d_match_array,  (tmp_avg_count*burst.get_sizes().size()) * n_subsets * sizeof(match_type));//just for now
+    gpuErrchk(	cudaMalloc( (void **) &d_match_array,  (tmp_avg_count*burst.get_sizes().size()) * n_subsets * sizeof(match_type))	);//just for now  //infant2
+
+	cudaMalloc( (void **) &d_match_count,  (              burst.get_sizes().size()) * n_subsets * sizeof(unsigned int));//just for now
 
 	cudaMalloc( (void **) &d_accum_nfa_table_lengths,    n_subsets * sizeof(unsigned int));
 	cudaMalloc( (void **) &d_accum_offset_table_lengths, n_subsets * sizeof(unsigned int));

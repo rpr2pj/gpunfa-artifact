@@ -432,6 +432,7 @@ void TransitionGraph::mapping_states2rules(unsigned int *match_count, match_type
                                                                          , int *rulestartvec, unsigned int gid
 #endif
                                                                                                              ) const {//version 2: multi-byte fetching
+	cout << "mapping states to rules! " << endl;
 	unsigned int total_matches=0;	
 	for (int j = 0; j < cur_size_vec.size(); j++)	total_matches += match_count[j];
 	fp   << "REPORTS: Total matches: " << total_matches << endl;
@@ -439,8 +440,8 @@ void TransitionGraph::mapping_states2rules(unsigned int *match_count, match_type
 	for (int j = 0; j < cur_size_vec.size(); j++) {
 		for (unsigned i = 0; i < match_count[j]; i++) {
 			map<unsigned, set<unsigned> >::const_iterator it = accepting_states_.find(match_array[match_vec_size*j + i].stat);		
-			if (j==0) fp   << match_array[match_vec_size*j + i].off  << "::" << endl;
-			else      fp   << match_array[match_vec_size*j + i].off + cur_size_vec[j-1] - (pad_size_vec.empty() ? 0 : pad_size_vec[j-1]) << "::" << endl;
+			if (j==0) fp   << match_array[match_vec_size*j + i].off  << "::";
+			else      fp   << match_array[match_vec_size*j + i].off + cur_size_vec[j-1] - (pad_size_vec.empty() ? 0 : pad_size_vec[j-1]) << "::";
 			if (it != accepting_states_.end()) {
 				set<unsigned>::iterator iitt;
 				for (iitt = it->second.begin();	iitt != it->second.end(); ++iitt) {
@@ -501,8 +502,9 @@ TransitionGraph *load_nfa_file(const char *pattern_name, unsigned int gid, unsig
 				cfg.add_trns(new HalfTrie<symbol_t, out_symbol_t>(*trn_file[i],
 							cfg.get_mutable_max_outs()[i+1]));
 				++trn_good;
+				cout << "good " << cur_name << '\n';
 			} else
-				clog << "No good " << i << '\n';
+				cout << "No good " << cur_name  << '\n';
 		}	
 		
 		if (cfg.get_good_tries() > 0) {
