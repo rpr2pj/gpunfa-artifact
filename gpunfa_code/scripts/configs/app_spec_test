@@ -1,0 +1,44 @@
+{
+    'root' : '/home/rpr2pj/Documents/gpunfa-artifact/gpunfa_benchmarks',
+    'apps' : 
+    [
+       
+
+	    {
+            'name' : 'Bro217',
+            'input' : 'Regex/Bro217/inputs/Bro217_10MB_depth_s0_p0.75.trace.input',
+            'automata' : 'Regex/Bro217/anml/bro217.anml'
+        },
+
+        {
+            'name' : 'ExactMath',
+            'input' : 'Regex/ExactMath/inputs/exact-math_depth_s0_p0.75.trace.input',
+            'automata' : 'Regex/ExactMath/anml/exactmath.anml'
+        },
+
+        {
+            'name' : 'Ranges05',
+            'input' : 'Regex/Ranges05/inputs/ranges05_depth_s0_p0.75.trace.input',
+            'automata' : 'Regex/Ranges05/anml/ranges05.anml'
+        },
+
+        {
+            'name' : 'Ranges1',
+            'input' : 'Regex/Ranges1/inputs/ranges1_depth_s0_p0.75.trace.input',
+            'automata' : 'Regex/Ranges1/anml/ranges1.anml'
+        },
+
+        {
+            'name' : 'TCP',
+            'input' : 'Regex/TCP/inputs/TCP_depth_s0_p0.75.trace.input',
+            'automata' : 'Regex/TCP/anml/automata_0.anml'
+        },
+
+        {
+            'name' : 'PowerEN',
+            'input' : 'ANMLZoo/PowerEN/inputs/poweren_1MB.input',
+            'automata' : 'ANMLZoo/PowerEN/anml/automata_0.anml'
+        }
+    ]
+}
+

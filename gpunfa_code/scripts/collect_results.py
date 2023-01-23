@@ -46,10 +46,10 @@ def read_from_file(filepath, keyword_list):
     for kw, typ in keyword_list:
         #print kw, typ
         #tmp = os.popen("cat %s | grep -w %s | awk '{print $3}'" % (filepath, kw) ).read()
-        tmp = os.popen("cat %s | grep -w %s " % (filepath, kw) ).read()
+        tmp = os.popen("cat %s | grep -aw %s " % (filepath, kw) ).read()
         #res_list.append(tmp.strip())
         v = tmp.strip().split('\n')[-1]
-        
+        print("____________tmp=",tmp,"  v=",v,"______________")
         item = get_token_after_denghao(v, kw)
 
         if get_type_of_kw(kw) == 'float':

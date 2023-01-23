@@ -38,6 +38,8 @@ def readFromFile(filename, kw):
     for nn, line in enumerate(f):
         line = line.strip()
         line_data = line.split()
+        print("--------printing line data---------")
+        print(line_data)
         
         if nn == 0:
             app_header = line_data
@@ -155,7 +157,7 @@ def plot(data1, app_order, app_rmap, cfg_order, cfg_rmap, error_data=None, secon
     print("----------------printing cfg_rmap----------------")
     print(cfg_rmap)
     
-    color=iter(cm.rainbow(np.linspace(0,1,11)))
+    color=iter(cm.rainbow(np.linspace(0,1,12)))
     next(color)
 
     plt.rcParams["font.weight"] = "bold"

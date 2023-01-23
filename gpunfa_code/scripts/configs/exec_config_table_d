@@ -1,0 +1,30 @@
+{
+    "exp_parameters" : {
+
+        "dfage" : [
+            ("exec", 'dfage_wrapper.sh', 'nocombination'),
+            ("algorithm", ["dfage"]),
+            ('split-entire-inputstream-to-chunk-size', ['1000']),
+            ("block-size", ["256"]),
+            ("max-nfa-size", ["256"]),
+        ],
+
+        "infant2" : [
+            ("exec", 'infant2_wrapper.sh', 'nocombination'),
+            ("algorithm", ["infant2"]),
+            ('split-entire-inputstream-to-chunk-size', ['1000']),
+            ("block-size", ["256"]),
+            ("max-nfa-size", ["256"]),
+        ]    
+
+    },
+
+    'exp_times'    : 1,
+    'out_prefix'   : 'output',
+    'input_suffix' : '1MB'
+ 
+}
+
+
+
+

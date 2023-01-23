@@ -2,13 +2,10 @@ import matplotlib
 matplotlib.use('agg')
 
 from helpers import *
-from ap_estimator_ideal import *
 
 cfg_name_map = {
     'output_infant_infant_0_1000000_1000_256_256' : 'iNFAnt',
     'output_infant2_infant2_0_1000000_1000_256_256' : 'iNFAnt2',
-    # 'output_infant2_infant2_1000_256_256' : 'iNFAnt2',
-    # 'output_dfage_dfage_1000_256_256' : 'DFAGE',
     'output_newtran_obat2_0_1000000_1000_256_256' : 'NT',
     'output_newtran_obat_MC_0_1000000_1000_256_256' : 'NT-Mac',
     'output_hotstarttt_hotstart_aa_0_1000000_1000_256_256_1280' : 'HotStartTT',
@@ -22,11 +19,10 @@ cfg_name_map = {
 cfg_rmap = {}
 
 cfg_order = [
-'AP',
-'AP_ideal',
+# 'AP',
+# 'AP_ideal',
 'iNFAnt',
 'iNFAnt2',
-# 'DFAGE',
 'NT',
 'NT-Mac',
 'NFA-CG',
@@ -84,8 +80,6 @@ apps_original = [
 
 app_order = []
 
-
-
 if __name__ == '__main__':
     app_list = get_app_order()
     #print(app_list)
@@ -109,6 +103,26 @@ if __name__ == '__main__':
 
     # blocking function
     plt, ax = plot(data1, app_order, app_rmap, cfg_order, cfg_rmap, storebar1name='abs_throughput.csv', geo_mean=False)
+
+    select_apps_in_ds(data1, [app_rmap[a] for a in app_order])
+    baseline_throughput = select_cfg_line(data1, cfg_rmap['iNFAnt'])
+    normalize_to(data1, cfg_rmap['iNFAnt'])
+    # normalize_to(data1, baseline_throughput)
+
+    plt, ax = plot(data1, app_order, app_rmap, cfg_order, cfg_rmap, storebar1name='norm_throughput.csv')
+
+    leg = ax.legend(loc='upper center', bbox_to_anchor=(0.6, 1.22), ncol=len(cfg_order) // 2, fancybox=True, shadow=True, fontsize = 25)
+    leg.get_frame().set_edgecolor('black')
+
+    ax.set_yscale('log', basey=2)
+    # ax.set_yticks([1, 2, 4, 8, 16, 32, 64, 128])
+    ax.set_yticks([1,2,4])
     
+    ax.get_yaxis().set_major_formatter(matplotlib.ticker.ScalarFormatter())
+    ax.get_yaxis().set_minor_formatter(matplotlib.ticker.NullFormatter())
 
+    ax.set_ylabel('Throughput\nNormalized to iNFAnt', fontsize=26)
+    #ax.set_ylim([0, 40])
 
+    plt.axhline(y=1, color='r', linestyle='--', linewidth=2.5)
+    plt.savefig('norm_throughput.pdf', bbox_inches='tight')
