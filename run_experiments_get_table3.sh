@@ -1,5 +1,6 @@
+# echo ${PWD}
+# export GPUNFA_ROOT=${PWD}
 cd ${GPUNFA_ROOT}
-pwd
 cd results
 
 if [ ! -d "exp_table3" ]; then
@@ -11,6 +12,7 @@ fi
 cp ${GPUNFA_ROOT}/gpunfa_code/scripts/configs/* .
 
 echo "Running Experiments... This will take several hours. "
+# python ${GPUNFA_ROOT}/gpunfa_code/scripts/launch_exps.py -b app_spec -f exec_config_table3 -e --clean
 python ${GPUNFA_ROOT}/gpunfa_code/scripts/launch_exps.py -b app_spec -f exec_config_table -e --clean
 
 echo "Experiments finished. "

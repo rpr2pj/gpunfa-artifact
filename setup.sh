@@ -31,9 +31,11 @@ else
         exit 1
 fi
 
-cd ${GPUNFA_ROOT}/gpunfa_code/src/infant2 
-make clean && make
+# cd ${GPUNFA_ROOT}/gpunfa_code/src/infant2 
+# make clean && make
 cp ${GPUNFA_ROOT}/gpunfa_code/scripts/infant2_wrapper.sh ${GPUNFA_ROOT}/gpunfa_code/build/bin
+cp ${GPUNFA_ROOT}/gpunfa_code/scripts/dfage_wrapper.sh ${GPUNFA_ROOT}/gpunfa_code/build/bin
+chmod 777 ${GPUNFA_ROOT}/gpunfa_code/build/bin/dfage_wrapper.sh
 cd ${GPUNFA_ROOT}
 
 echo "finished build the executables. Set them to PATH. "
